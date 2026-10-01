@@ -1,0 +1,188 @@
+# =============================================================================
+# PyCharm / JetBrains IDEs
+# =============================================================================
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+cmake-build-*/
+
+# Sensitive or machine-specific IDE files
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/dbnavigator.xml
+.idea/**/httpRequests
+.idea/**/gradle.xml
+.idea/**/libraries
+.idea/replstate.xml
+.idea_modules/
+
+# JetBrains plugin artifacts
+atlassian-ide-plugin.xml
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+
+# =============================================================================
+# Python bytecode and caches
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pytype/
+.pyre/
+.dmypy.json
+dmypy.json
+cython_debug/
+
+# =============================================================================
+# Virtual environments
+# =============================================================================
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+pyvenv.cfg
+
+# =============================================================================
+# Packaging and build artifacts
+# =============================================================================
+build/
+dist/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+
+# PyInstaller
+*.manifest
+*.spec
+
+# =============================================================================
+# Testing and coverage
+# =============================================================================
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+nosetests.xml
+
+# =============================================================================
+# Package managers and tooling
+# =============================================================================
+# Uncomment if you do not want to commit lock files
+# Pipfile.lock
+# poetry.lock
+# pdm.lock
+.pdm-python
+.pdm-build/
+__pypackages__/
+
+# =============================================================================
+# Jupyter / notebooks
+# =============================================================================
+.ipynb_checkpoints/
+profile_default/
+ipython_config.py
+
+# =============================================================================
+# Frameworks
+# =============================================================================
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Flask
+instance/
+.webassets-cache
+
+# Scrapy
+.scrapy
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# =============================================================================
+# Documentation builds
+# =============================================================================
+docs/_build/
+site/
+/site
+
+# =============================================================================
+# Secrets and local configuration
+# =============================================================================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+*.jks
+secrets.json
+credentials.json
+*.secret
+
+# =============================================================================
+# Logs and temporary files
+# =============================================================================
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# =============================================================================
+# Operating system files
+# =============================================================================
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.claude/
+.claude
