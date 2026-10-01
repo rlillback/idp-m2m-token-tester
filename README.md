@@ -122,3 +122,7 @@ Add an IdP by subclassing `IdpProvider` and registering it in `providers/__init_
 ```bash
 pytest && ruff check . && mypy
 ```
+
+## License
+
+Copyright 2026 Ray Lillback. Licensed under the [Apache License, Version 2.0](LICENSE).
