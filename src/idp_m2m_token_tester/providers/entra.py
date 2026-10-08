@@ -31,3 +31,7 @@ class EntraProvider(IdpProvider):
 
     def jwks_uri(self, values: Mapping[str, str]) -> str | None:
         return f"https://login.microsoftonline.com/{values['tenant_id']}/discovery/v2.0/keys"
+
+    def discovery_url(self, values: Mapping[str, str]) -> str | None:
+        tenant = values["tenant_id"]
+        return f"https://login.microsoftonline.com/{tenant}/v2.0/.well-known/openid-configuration"

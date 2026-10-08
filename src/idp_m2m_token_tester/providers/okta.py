@@ -44,3 +44,8 @@ class OktaProvider(IdpProvider):
 
     def jwks_uri(self, values: Mapping[str, str]) -> str | None:
         return f"{self._base(values)}/keys"
+
+    def discovery_url(self, values: Mapping[str, str]) -> str | None:
+        server = values.get("auth_server", "default")
+        prefix = "" if server == "org" else f"/oauth2/{server}"
+        return f"https://{values['domain']}{prefix}/.well-known/oauth-authorization-server"

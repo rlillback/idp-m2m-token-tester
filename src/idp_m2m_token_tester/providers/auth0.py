@@ -32,3 +32,6 @@ class Auth0Provider(IdpProvider):
 
     def jwks_uri(self, values: Mapping[str, str]) -> str | None:
         return f"https://{values['domain']}/.well-known/jwks.json"
+
+    def discovery_url(self, values: Mapping[str, str]) -> str | None:
+        return f"https://{values['domain']}/.well-known/openid-configuration"

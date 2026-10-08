@@ -14,6 +14,10 @@ class KeycloakProvider(IdpProvider):
     name = "keycloak"
     display_name = "Keycloak"
 
+    def __init__(self, session: requests.Session | None = None) -> None:
+        super().__init__(session)
+        self._meta_cache: dict[str, tuple[str, dict[str, Any]]] = {}
+
     def settings(self) -> list[Setting]:
         return [
             Setting("base_url", "KC_BASE", "Keycloak base URL (e.g. https://kc.example.com)"),
@@ -24,7 +28,13 @@ class KeycloakProvider(IdpProvider):
         ]
 
     def _metadata(self, values: Mapping[str, str]) -> dict[str, Any]:
+        return self._discover(values)[1]
+
+    def _discover(self, values: Mapping[str, str]) -> tuple[str, dict[str, Any]]:
+        """Return (metadata URL, metadata), fetched once per realm."""
         realm_url = f"{values['base_url'].rstrip('/')}/realms/{values['realm']}"
+        if realm_url in self._meta_cache:
+            return self._meta_cache[realm_url]
         last = "no response"
         for path in ("oauth-authorization-server", "openid-configuration"):
             url = f"{realm_url}/.well-known/{path}"
@@ -36,7 +46,8 @@ class KeycloakProvider(IdpProvider):
             if resp.ok:
                 meta = resp.json()
                 if isinstance(meta, dict):
-                    return meta
+                    self._meta_cache[realm_url] = (url, meta)
+                    return url, meta
             last = f"HTTP {resp.status_code} from {url}"
         raise TokenRequestError(f"Keycloak discovery failed: {last}")
 
@@ -56,3 +67,6 @@ class KeycloakProvider(IdpProvider):
     def jwks_uri(self, values: Mapping[str, str]) -> str | None:
         uri = self._metadata(values).get("jwks_uri")
         return str(uri) if uri else None
+
+    def discovery_url(self, values: Mapping[str, str]) -> str | None:
+        return self._discover(values)[0]

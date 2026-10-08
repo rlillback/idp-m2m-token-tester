@@ -52,7 +52,9 @@ def run(idp: str, verify: bool, env_file: Path | None = None) -> None:
     response = provider.fetch_token(values)
     jwks = provider.jwks_uri(values) if verify else None
     decoded = decode_token(response.access_token, jwks_uri=jwks)
-    render(response, decoded, sys.stdout)
+    iss = decoded.payload.get("iss")
+    connection = provider.connection_info(values, issuer=iss if isinstance(iss, str) else None)
+    render(response, decoded, sys.stdout, connection)
 
 
 def main(argv: Sequence[str] | None = None) -> int:

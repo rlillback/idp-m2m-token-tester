@@ -1,12 +1,14 @@
 # idp-m2m-token-tester
 
 Request an OAuth2 `client_credentials` token from Auth0, Entra ID, Keycloak, Okta or Ping,
-print it on a single line, and show the decoded JWT.
+print it on a single line, show the decoded JWT, and print the connection settings a client
+application needs to talk to that IdP.
 
 - Credentials are **never stored by the tool**. Each setting is read from an environment variable or a `.env` file you provide;
   if unset you are prompted (secrets via `getpass`, not echoed).
 - The token is **never written to disk**.
 - Decoding is **unverified** by default; add `--verify` to check the signature against the IdP's JWKS.
+- The client secret is **never printed**; it is shown masked in the connection settings.
 
 ## Setup
 
@@ -26,6 +28,33 @@ python -m idp_m2m_token_tester --idp auth0
 ```
 
 Prefer prompting or a secrets manager over exporting secrets in your shell history.
+
+## Output
+
+On success the tool prints, in order: the token response fields, the access token on a single line,
+the decoded JWT header and payload, the time claims, and finally a **Connection configuration**
+section you can copy into the application that will connect to the IdP:
+
+```text
+== Connection configuration ==
+Provider       : Okta
+Discovery URL  : https://dev-123456.okta.com/oauth2/default/.well-known/oauth-authorization-server
+Issuer         : https://dev-123456.okta.com/oauth2/default
+Token endpoint : https://dev-123456.okta.com/oauth2/default/v1/token
+JWKS URI       : https://dev-123456.okta.com/oauth2/default/v1/keys
+Grant type     : client_credentials
+Client ID      : 0oa1b2c3d4e5f6g7h8i9
+Client secret  : ******** (not shown)
+Client auth    : client_secret_post
+Scope          : access_token
+```
+
+- The token endpoint, client auth method and audience/scope are taken from the request that was
+  actually sent, so they include defaults such as Entra's `api://<client_id>/.default` scope.
+- **Issuer** is read from the token's `iss` claim and is omitted for opaque (non-JWT) tokens.
+- **Discovery URL** is the IdP's metadata document. For Keycloak it is the URL that answered during
+  discovery; for the other IdPs it is built from the IdP's documented URL pattern.
+- The section is only printed when a token is returned; on failure only the error is shown.
 
 ## Environment variables
 
@@ -109,13 +138,15 @@ src/idp_m2m_token_tester/
   cli.py          argparse, IdP menu, orchestration
   config.py       env-var-then-prompt resolver
   jwt_decoder.py  unverified decode, optional JWKS verify, time claims
-  display.py      output
+  display.py      output, including the connection configuration section
   models.py  errors.py
   providers/      base.py (abstract IdpProvider) + one module per IdP
 tests/            pytest, HTTP mocked with `responses`
 ```
 
 Add an IdP by subclassing `IdpProvider` and registering it in `providers/__init__.py`.
+Override `jwks_uri()` and `discovery_url()` so `--verify` and the connection configuration output
+have the IdP's key and metadata locations.
 
 ## Development
 

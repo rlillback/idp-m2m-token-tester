@@ -68,3 +68,9 @@ class PingProvider(IdpProvider):
         if values["flavor"] == "pingone":
             return f"https://auth.pingone.{values['region']}/{values['env_id']}/as/jwks"
         return f"https://{values['host']}/pf/JWKS"
+
+    def discovery_url(self, values: Mapping[str, str]) -> str | None:
+        if values["flavor"] == "pingone":
+            base = f"https://auth.pingone.{values['region']}/{values['env_id']}/as"
+            return f"{base}/.well-known/openid-configuration"
+        return f"https://{values['host']}/.well-known/openid-configuration"

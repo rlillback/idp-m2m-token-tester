@@ -3,15 +3,33 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable, Mapping
 from typing import TextIO
 
 from .models import DecodedToken, TokenResponse
 
 
-def render(response: TokenResponse, decoded: DecodedToken, out: TextIO) -> None:
+def render(
+    response: TokenResponse,
+    decoded: DecodedToken,
+    out: TextIO,
+    connection: Mapping[str, str] | None = None,
+) -> None:
     def line(text: str = "") -> None:
         print(text, file=out)
 
+    _render_token(response, decoded, line)
+    if connection:
+        line()
+        line("== Connection configuration ==")
+        width = max(len(k) for k in connection)
+        for key, value in connection.items():
+            line(f"{key:<{width}} : {value}")
+
+
+def _render_token(
+    response: TokenResponse, decoded: DecodedToken, line: Callable[..., None]
+) -> None:
     line("== Token response ==")
     line(f"token_type : {response.token_type or '-'}")
     line(f"expires_in : {response.expires_in if response.expires_in is not None else '-'}")

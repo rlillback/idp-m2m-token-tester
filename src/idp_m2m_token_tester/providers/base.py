@@ -7,7 +7,7 @@ from typing import Any, ClassVar
 
 import requests
 
-from ..config import Setting
+from ..config import Setting, mask
 from ..errors import TokenRequestError
 from ..models import TokenResponse
 
@@ -43,6 +43,38 @@ class IdpProvider(ABC):
     def jwks_uri(self, values: Mapping[str, str]) -> str | None:
         """Where to find signing keys for --verify. None if unknown."""
         return None
+
+    def discovery_url(self, values: Mapping[str, str]) -> str | None:
+        """OIDC/OAuth metadata document for this IdP. None if unknown."""
+        return None
+
+    def connection_info(
+        self, values: Mapping[str, str], issuer: str | None = None
+    ) -> dict[str, str]:
+        """Settings a client app needs to connect, derived from the real token request.
+
+        The client secret is masked; it is never printed.
+        """
+        req = self.build_request(values)
+        body = req.json_body or req.form or {}
+        info = {"Provider": self.display_name}
+        if discovery := self.discovery_url(values):
+            info["Discovery URL"] = discovery
+        if issuer:
+            info["Issuer"] = issuer
+        info["Token endpoint"] = req.url
+        if jwks := self.jwks_uri(values):
+            info["JWKS URI"] = jwks
+        info["Grant type"] = body.get("grant_type", "client_credentials")
+        info["Client ID"] = values["client_id"]
+        info["Client secret"] = f"{mask(values['client_secret'])} (not shown)"
+        info["Client auth"] = "client_secret_basic" if req.basic_auth else "client_secret_post"
+        if req.json_body is not None:
+            info["Client auth"] += " (JSON body)"
+        for k in ("audience", "resource", "scope"):
+            if body.get(k):
+                info[k.capitalize()] = body[k]
+        return info
 
     def fetch_token(self, values: Mapping[str, str]) -> TokenResponse:
         req = self.build_request(values)
